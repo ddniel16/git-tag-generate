@@ -1,6 +1,7 @@
 {
   "name": "git-tag-generate",
   "homepage": "https://github.com/ddniel16/git-tag-generate",
+  "license": "GPL-3.0 license",
   "author": {
     "name": "Daniel",
     "url": "https://github.com/ddniel16"
