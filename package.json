@@ -1,9 +1,16 @@
 {
   "name": "git-tag-generate",
+  "homepage": "https://github.com/ddniel16/git-tag-generate",
+  "author": {
+    "name": "Daniel",
+    "url": "https://github.com/ddniel16"
+  },
   "bin": {
     "gtg": "main.js"
   },
+  "preferGlobal": true,
   "main": "main.js",
+  "keywords": ["git", "tag", "git-tag-generate", "version", "release", "git-tag"],
   "dependencies": {
     "chalk": "^4.1.2",
     "command-line-args": "^5.2.1",
