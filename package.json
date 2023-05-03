@@ -1,7 +1,7 @@
 {
   "name": "git-tag-generate",
   "bin": {
-    "tag": "main.js"
+    "gtg": "main.js"
   },
   "main": "main.js",
   "dependencies": {
