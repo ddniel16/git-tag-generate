@@ -72,10 +72,19 @@ class TagListClass {
     return (function() {
       const args = [
         'tag',
-        '-l', searchPrefix + '-*',
-        '--format', '%(refname:strip=2)',
-        '--sort', '-creatordate',
+        '--list',
       ];
+
+      if (searchPrefix === '') {
+        args.push('[0-9]*');
+      } else {
+        args.push(searchPrefix + '-*');
+      }
+
+      args.push('--format');
+      args.push('%(refname:strip=2)');
+      args.push('--sort');
+      args.push('-creatordate');
 
       const spawn = childProcess.spawnSync('git', args, {encoding: 'utf-8'});
       if (spawn.status !== 0) {

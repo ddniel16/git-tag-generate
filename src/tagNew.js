@@ -53,9 +53,11 @@ class TagNewClass {
   createNextTag(args, prefix) {
     const version = TagList.getLastTagByPrefix(prefix).split('-').pop();
 
-    const vPatch = prefix + '-' + semver.inc(version, 'patch');
-    const vMinor = prefix + '-' + semver.inc(version, 'minor');
-    const vMajor = prefix + '-' + semver.inc(version, 'major');
+    prefix = (prefix === '' ? '' : prefix + '-');
+
+    const vPatch = prefix + semver.inc(version, 'patch');
+    const vMinor = prefix + semver.inc(version, 'minor');
+    const vMajor = prefix + semver.inc(version, 'major');
 
     const newReleases = [
       {name: 'Patch ' + vPatch, value: vPatch},
