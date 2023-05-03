@@ -1,95 +1,125 @@
-#!/usr/bin/env node
 const childProcess = require('child_process');
 const chalk = require('chalk');
 const log = console.log;
 
+/**
+ * Clase para obtener información de los tags
+ */
 class TagListClass {
+  /** Constructor */
   constructor() {
     this.tagsRaw = [];
-  }
-
-  init() {
     this.fetchAllTags();
   }
 
+  /**
+   * Actualiza la lista de tags del repositorio
+   * @return {string} stdout
+   */
   fetchAllTags() {
-    var spawn = childProcess.spawnSync('git', ['fetch', '--all', '--tags'], {encoding: 'utf-8'});
-    var errorText = spawn.stderr.toString().trim();
+    const spawn = childProcess.spawnSync(
+        'git',
+        ['fetch', '--all', '--tags'],
+        {encoding: 'utf-8'},
+    );
 
-    if (errorText) {
+    if (spawn.status !== 0) {
+      const errorText = spawn.stderr.toString().trim();
       log(chalk.red('No es un repositorio git'));
+      log(errorText);
       process.exit(0);
-    } else {
-      return spawn.stdout.toString().trim();
     }
+
+    return spawn.stdout.toString().trim();
   }
 
+  /**
+   * Devuelve el listado de prefijos que hay en el repositorio
+   * @return {array} tags
+   */
   getListPrefix() {
-    var tagsRaw = this.getListRaw();
-    var tagsPrefix = tagsRaw.map(function(tagRaw) {
-      var version = tagRaw.split('-').pop();
+    const tagsRaw = this.getListRaw();
+    let tagsPrefix = tagsRaw.map(function(tagRaw) {
+      const version = tagRaw.split('-').pop();
       if (tagRaw.replaceAll(version, '') === '') {
         return '';
       }
       return tagRaw.replaceAll('-' + version, '');
     });
 
-    tagsPrefix = [ ...new Set(tagsPrefix)];
-
+    tagsPrefix = [...new Set(tagsPrefix)];
     return tagsPrefix;
   }
 
+  /**
+   * Devuelve el último tag del repositorio
+   * @return {array} tags
+   */
   getLastTag() {
     if (this.getListRaw() === false) {
       return false;
     }
-    return this.getListRaw().shift();
+    const first = [...this.getListRaw()].shift();
+    return first;
   }
 
+  /**
+   * Devuelve el último tag del repositorio que empieza por el prefijo indicado
+   * @param {string} searchPrefix
+   * @return {string} tag
+   */
   getLastTagByPrefix(searchPrefix) {
     return (function() {
-      var args = [
+      const args = [
         'tag',
         '-l', searchPrefix + '-*',
         '--format', '%(refname:strip=2)',
-        '--sort', '-creatordate'
+        '--sort', '-creatordate',
       ];
 
-      var spawn = childProcess.spawnSync('git', args, {encoding: 'utf-8'});
-
-      var errorText = spawn.stderr.toString().trim();
-
-      if (errorText) {
+      const spawn = childProcess.spawnSync('git', args, {encoding: 'utf-8'});
+      if (spawn.status !== 0) {
+        const errorText = spawn.stderr.toString().trim();
         log(chalk.red('No es un repositorio git'));
+        log(errorText);
         process.exit(0);
-      } else {
-        return spawn.stdout.toString().trim().split('\n').shift();
       }
+
+      return spawn.stdout.toString().trim().split('\n').shift();
     })();
   }
 
+  /**
+   * Devuelve el listado de tags del repositorio
+   * @return {array} tags
+   */
   getListRaw() {
     if (this.tagsRaw.length > 0) {
       return this.tagsRaw;
     }
 
-    var tagListRaw = (function() {
-      var spawn = childProcess.spawnSync('git', ['tag', '--format', '%(refname:strip=2)', '--sort', '-creatordate'], {encoding: 'utf-8'});
-      var errorText = spawn.stderr.toString().trim();
+    const tagListRaw = (function() {
+      const spawn = childProcess.spawnSync(
+          'git',
+          ['tag', '--format', '%(refname:strip=2)', '--sort', '-creatordate'],
+          {encoding: 'utf-8'},
+      );
 
-      if (errorText) {
+      if (spawn.status !== 0) {
+        const errorText = spawn.stderr.toString().trim();
         log(chalk.red('No es un repositorio git'));
+        log(errorText);
         process.exit(0);
-      } else {
-        return spawn.stdout.toString().trim();
       }
+
+      return spawn.stdout.toString().trim();
     })();
 
     if (tagListRaw.trim() === '') {
       return false;
     }
 
-    var list = tagListRaw.trim().split('\n');
+    const list = tagListRaw.trim().split('\n');
 
     for (let i = 0; i < list.length; i++) {
       this.tagsRaw.push(list[i].replaceAll('"', ''));
