@@ -1,0 +1,11 @@
+# Solo incluir dist en el paquete npm
+src/
+*.spec.ts
+*.test.ts
+tsconfig.json
+.eslintrc.json
+.prettierrc.json
+.prettierignore
+vitest.config.ts
+.gitignore
+.npmignore
