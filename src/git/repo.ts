@@ -9,9 +9,7 @@ let gitInstance: SimpleGit | null = null;
  * @returns Instancia de SimpleGit
  */
 export function getGit(baseDir = process.cwd()): SimpleGit {
-  if (!gitInstance) {
-    gitInstance = simpleGit(baseDir);
-  }
+  gitInstance ??= simpleGit(baseDir);
   return gitInstance;
 }
 
@@ -51,7 +49,7 @@ export async function hasRemote(remoteName = 'origin'): Promise<boolean> {
 export async function getCurrentBranch(): Promise<string> {
   const git = getGit();
   const status = await git.status();
-  return status.current || 'unknown';
+  return status.current ?? 'unknown';
 }
 
 /**

@@ -16,7 +16,7 @@ import type {
 export async function listTags(options: ListTagsOptions = {}): Promise<Tag[]> {
   const git = getGit();
 
-  const sortBy = options.sortBy || '-creatordate';
+  const sortBy = options.sortBy ?? '-creatordate';
   const tagList = await git.tag([
     '--sort=' + sortBy,
     '--format=%(refname:short)|%(creatordate:iso8601)|%(objectname:short)',
@@ -44,7 +44,7 @@ export async function listTags(options: ListTagsOptions = {}): Promise<Tag[]> {
   // Filtrar por prefijo si se especifica
   if (options.prefix !== undefined) {
     return tags.filter((tag) => {
-      if (options.prefix === null || options.prefix === '') {
+      if (options.prefix === '' || options.prefix === undefined) {
         return !tag.prefix;
       }
       return tag.prefix === options.prefix;
@@ -92,7 +92,7 @@ export async function createTag(options: CreateTagOptions): Promise<GitOperation
     const git = getGit();
 
     // Crear tag anotado con mensaje
-    const tagMessage = message || `Tag ${tagName}`;
+    const tagMessage = message ?? `Tag ${tagName}`;
     await git.addAnnotatedTag(tagName, tagMessage);
 
     // Push si está habilitado

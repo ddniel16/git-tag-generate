@@ -29,7 +29,7 @@ export async function nextCommand(args: CliArgs): Promise<void> {
   // Si hay múltiples prefijos o prefijos + sin prefijo, preguntar
   if (prefixes.length > 1 || (prefixes.length === 1 && prefixes[0] !== null)) {
     const prefixChoices = prefixes.map((p) => ({
-      name: p === null ? chalk.gray('(sin prefijo)') : p,
+      name: p ?? chalk.gray('(sin prefijo)'),
       value: p,
     }));
 
@@ -61,8 +61,9 @@ export async function nextCommand(args: CliArgs): Promise<void> {
       selectedPrefix = normalizePrefix(newPrefixInput);
       showInfo(`Prefijo normalizado: ${chalk.cyan(selectedPrefix)}`);
     } else {
-      selectedPrefix = prefixChoice === null ? undefined : prefixChoice;
+      selectedPrefix = prefixChoice ?? undefined;
     }
+    // eslint-disable-next-line no-dupe-else-if
   } else if (prefixes.length === 1 && prefixes[0] !== null) {
     selectedPrefix = prefixes[0];
   }
