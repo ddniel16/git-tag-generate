@@ -9,6 +9,9 @@ import { listCommand } from './commands/list.js';
 import { deleteCommand } from './commands/delete.js';
 import type { CliArgs, SemVerLevel } from '../types/index.js';
 
+declare const __VERSION__: string;
+declare const __PKG_NAME__: string;
+
 /**
  * Parsea los argumentos de línea de comandos
  */
@@ -144,6 +147,7 @@ function showHelp(): void {
   console.log('  --noPush               No subir tag al remote');
   console.log('  --dry-run              Simular sin crear tag');
   console.log('  --prefixes             Solo listar prefijos (con comando list)');
+  console.log('  -v, --version          Mostrar versión del programa');
   console.log('  -h, --help             Mostrar esta ayuda\n');
 
   console.log(chalk.bold('Ejemplos:'));
@@ -165,6 +169,12 @@ function showHelp(): void {
 async function main(): Promise<void> {
   const rawArgs = parseArgs();
   const args = mapShortcuts(rawArgs);
+
+  // Mostrar versión
+  if (process.argv.includes('-v') || process.argv.includes('--version')) {
+    console.log(`${__PKG_NAME__} v${__VERSION__}`);
+    process.exit(0);
+  }
 
   // Mostrar ayuda
   if (args.command === 'help' || process.argv.includes('-h') || process.argv.includes('--help')) {
