@@ -18,7 +18,7 @@
     "LICENSE.md"
   ],
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0"
   },
   "packageManager": "pnpm@9.0.0",
   "preferGlobal": true,
@@ -36,7 +36,7 @@
   "scripts": {
     "clean": "node -e \"try { require('fs').rmSync('dist', { recursive: true, force: true }) } catch(e){}\"",
     "build": "node --run clean && node --run validate && node esbuild.config.mjs",
-    "validate": "node --run lint && node --run type-check && node --run format:check",
+    "validate": "node --run lint && node --run type-check && node --run format",
     "postbuild": "chmod +x dist/main.js",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -44,8 +44,8 @@
     "test:ci": "vitest run --coverage --reporter=verbose",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
-    "format": "prettier --write \"src/**/*.ts\"",
-    "format:check": "prettier --check \"src/**/*.ts\"",
+    "format": "prettier --check \"src/**/*.ts\"",
+    "format:fix": "prettier --write \"src/**/*.ts\"",
     "type-check": "tsc --noEmit",
     "link": "pnpm link --global",
     "unlink": "pnpm unlink --global",
