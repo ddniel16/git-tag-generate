@@ -59,3 +59,46 @@ jobs:
             exit 1
           fi
           echo "✓ Build artifacts verified"
+
+  publish-npm:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+    needs: lint-test-build
+    if: github.event.base_ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
+    environment:
+      name: publish-npm
+      url: https://github.com/${{ github.repository }}/packages
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org/
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Restore node_modules cache
+        uses: actions/cache/restore@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-node-modules-
+          fail-on-cache-miss: true
+
+      - name: Build project
+        run: node --run build
+
+      - name: Publish to npm (dry-run)
+        run: pnpm publish --dry-run --access public --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+
+      - name: Publish to npm
+        run: pnpm publish --access public --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
