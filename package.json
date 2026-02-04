@@ -2,26 +2,73 @@
   "name": "git-tag-generate",
   "homepage": "https://github.com/ddniel16/git-tag-generate",
   "version": "0.0.3",
-  "license": "GPL-3.0 license",
+  "license": "GPL-3.0",
   "author": {
-    "name": "Daniel",
+    "name": "ddniel16",
     "url": "https://github.com/ddniel16"
   },
+  "type": "module",
   "bin": {
-    "gtg": "main.js"
+    "gtg": "./dist/main.js"
   },
+  "main": "./dist/main.js",
+  "files": [
+    "dist/",
+    "README.md",
+    "LICENSE.md"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "packageManager": "pnpm@9.0.0",
   "preferGlobal": true,
-  "main": "main.js",
-  "keywords": ["git", "tag", "git-tag-generate", "version", "release", "git-tag"],
+  "keywords": [
+    "git",
+    "tag",
+    "git-tag-generate",
+    "version",
+    "release",
+    "git-tag",
+    "semver",
+    "cli",
+    "typescript"
+  ],
+  "scripts": {
+    "clean": "node -e \"try { require('fs').rmSync('dist', { recursive: true, force: true }) } catch(e){}\"",
+    "build": "node --run clean && node --run validate && node esbuild.config.mjs",
+    "validate": "node --run lint && node --run type-check && node --run format",
+    "postbuild": "chmod +x dist/main.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:ci": "vitest run --coverage --reporter=verbose",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "format": "prettier --check \"src/**/*.ts\"",
+    "format:fix": "prettier --write \"src/**/*.ts\"",
+    "type-check": "tsc --noEmit",
+    "link": "pnpm link --global",
+    "unlink": "pnpm unlink --global",
+    "preversion": "node --run test && node --run build",
+    "postversion": "git push && git push --tags"
+  },
   "dependencies": {
-    "chalk": "^4.1.2",
-    "command-line-args": "^5.2.1",
-    "inquirer": "^8.2.5",
-    "semver": "^7.5.0",
-    "slugify": "^1.6.6"
+    "@inquirer/prompts": "^5.5.0",
+    "chalk": "^5.3.0",
+    "semver": "^7.6.0",
+    "simple-git": "^3.25.0"
   },
   "devDependencies": {
-    "eslint": "^8.39.0",
-    "eslint-config-google": "^0.14.0"
+    "@types/node": "^20.11.0",
+    "@types/semver": "^7.5.6",
+    "@typescript-eslint/eslint-plugin": "^8.18.0",
+    "@typescript-eslint/parser": "^8.18.0",
+    "@vitest/coverage-v8": "^1.2.0",
+    "esbuild": "^0.20.0",
+    "eslint": "^9.39.0",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.2.0",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.0"
   }
 }
