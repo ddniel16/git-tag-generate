@@ -33,6 +33,10 @@
     "cli",
     "typescript"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ddniel16/git-tag-generate.git"
+  },
   "scripts": {
     "clean": "node -e \"try { require('fs').rmSync('dist', { recursive: true, force: true }) } catch(e){}\"",
     "build": "node --run clean && node --run validate && node esbuild.config.mjs",
