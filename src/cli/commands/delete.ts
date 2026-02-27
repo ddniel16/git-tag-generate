@@ -2,6 +2,7 @@ import { checkbox, confirm } from '@inquirer/prompts';
 import chalk from 'chalk';
 import { listTags, deleteTag } from '../../git/tags.js';
 import { showSuccess, showWarning, showInfo } from '../../utils/validators.js';
+import { getTranslation } from '../../i18n/config.js';
 import type { CliArgs } from '../../types/index.js';
 
 /**
@@ -9,18 +10,19 @@ import type { CliArgs } from '../../types/index.js';
  * @param args - Argumentos de CLI
  */
 export async function deleteCommand(args: CliArgs): Promise<void> {
-  showInfo('Selecciona los tags a eliminar');
+  const t = getTranslation();
+  showInfo(t('commands.delete.title'));
 
   const allTags = await listTags();
 
   if (allTags.length === 0) {
-    showWarning('No hay tags en el repositorio');
+    showWarning(t('commands.delete.noTags'));
     return;
   }
 
   // Multi-select de tags
   const selectedTags = await checkbox({
-    message: 'Selecciona los tags a eliminar (usa espacio para seleccionar):',
+    message: t('commands.delete.selectPrompt'),
     choices: allTags.map((tag) => ({
       name: `${tag.fullName} ${tag.date ? chalk.gray(`(${tag.date})`) : ''}`,
       value: tag.fullName,
@@ -29,24 +31,24 @@ export async function deleteCommand(args: CliArgs): Promise<void> {
   });
 
   if (selectedTags.length === 0) {
-    console.log(chalk.gray('Ningún tag seleccionado. Operación cancelada.'));
+    console.log(chalk.gray(t('commands.delete.noneSelected')));
     return;
   }
 
   // Mostrar resumen
-  console.log(chalk.yellow(`\nTags a eliminar (${selectedTags.length}):`));
+  console.log(chalk.yellow(`\n${t('commands.delete.toDelete', { count: selectedTags.length })}`));
   for (const tagName of selectedTags) {
     console.log(chalk.red(`  - ${tagName}`));
   }
 
   // Confirmar eliminación
   const confirmDelete = await confirm({
-    message: `¿Estás seguro de eliminar ${selectedTags.length} tag(s)?`,
+    message: t('commands.delete.confirmDelete', { count: selectedTags.length }),
     default: false,
   });
 
   if (!confirmDelete) {
-    console.log(chalk.gray('Operación cancelada'));
+    console.log(chalk.gray(t('commands.new.operationCancelled')));
     return;
   }
 
@@ -73,9 +75,9 @@ export async function deleteCommand(args: CliArgs): Promise<void> {
   // Resumen final
   console.log('');
   if (successCount > 0) {
-    showSuccess(`${successCount} tag(s) eliminado(s) correctamente`);
+    showSuccess(t('commands.delete.deleted', { count: successCount }));
   }
   if (errorCount > 0) {
-    showWarning(`${errorCount} tag(s) con errores`);
+    showWarning(t('commands.delete.errors', { count: errorCount }));
   }
 }

@@ -4,6 +4,7 @@ import { normalizePrefix, isValidPrefix } from '../../utils/slug.js';
 import { DEFAULT_INITIAL_VERSION } from '../../domain/semver.js';
 import * as tagService from '../../services/tagService.js';
 import { showSuccess, showWarning, showInfo, exitWithError } from '../../utils/validators.js';
+import { getTranslation } from '../../i18n/config.js';
 import type { CliArgs } from '../../types/index.js';
 
 /**
@@ -11,20 +12,21 @@ import type { CliArgs } from '../../types/index.js';
  * @param args - Argumentos de CLI
  */
 export async function newCommand(args: CliArgs): Promise<void> {
-  showInfo('Creando nuevo tag');
+  const t = getTranslation();
+  showInfo(t('commands.new.creating'));
 
   // Verificar estado de la rama
   const branchStatus = await tagService.checkBranchStatus();
   if (branchStatus.shouldWarn) {
     showWarning(
-      `Estás en la rama '${chalk.yellow(branchStatus.currentBranch)}' (no es main/master)`
+      t('commands.new.noBranchWarning', { branch: chalk.yellow(branchStatus.currentBranch) })
     );
     const continueAnyway = await confirm({
-      message: '¿Deseas continuar de todas formas?',
+      message: t('commands.new.continueAnyway'),
       default: false,
     });
     if (!continueAnyway) {
-      console.log(chalk.gray('Operación cancelada'));
+      console.log(chalk.gray(t('commands.new.operationCancelled')));
       process.exit(0);
     }
   }
@@ -32,42 +34,42 @@ export async function newCommand(args: CliArgs): Promise<void> {
   // Prompt para prefijo (opcional)
   let prefix: string | undefined;
   const usePrefixResponse = await confirm({
-    message: '¿Deseas usar un prefijo para el tag?',
+    message: t('commands.new.usePrefix'),
     default: false,
   });
 
   if (usePrefixResponse) {
     const prefixInput = await input({
-      message: 'Ingresa el prefijo (se normalizará automáticamente):',
+      message: t('commands.new.enterPrefix'),
       validate: (value) => {
         if (!value || value.trim().length === 0) {
-          return 'El prefijo no puede estar vacío';
+          return t('validation.prefixEmpty');
         }
         const normalized = normalizePrefix(value);
         if (!isValidPrefix(normalized)) {
-          return `El prefijo '${normalized}' no es válido. Solo letras minúsculas, números y guiones`;
+          return t('validation.prefixInvalid', { prefix: normalized });
         }
         return true;
       },
     });
 
     prefix = normalizePrefix(prefixInput);
-    showInfo(`Prefijo normalizado: ${chalk.cyan(prefix)}`);
+    showInfo(t('commands.new.prefixNormalized', { prefix: chalk.cyan(prefix) }));
   }
 
   // Mostrar versión inicial
   const version = DEFAULT_INITIAL_VERSION;
-  showInfo(`Versión inicial: ${chalk.cyan(version)}`);
+  showInfo(t('commands.new.initialVersion', { version: chalk.cyan(version) }));
 
   // Confirmar creación
   const tagName = prefix ? `${prefix}-${version}` : version;
   const confirmCreate = await confirm({
-    message: `¿Crear tag '${chalk.green(tagName)}'?`,
+    message: t('commands.new.confirmCreate', { tag: chalk.green(tagName) }),
     default: true,
   });
 
   if (!confirmCreate) {
-    console.log(chalk.gray('Operación cancelada'));
+    console.log(chalk.gray(t('commands.new.operationCancelled')));
     process.exit(0);
   }
 

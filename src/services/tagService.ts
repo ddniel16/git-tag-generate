@@ -2,6 +2,7 @@ import * as gitTags from '../git/tags.js';
 import * as gitRepo from '../git/repo.js';
 import { extractPrefixes, filterByPrefix, formatTag } from '../domain/tag.js';
 import { getNextVersion, isValidSemVer } from '../domain/semver.js';
+import { getTranslation } from '../i18n/config.js';
 import type { Tag, TagGroup, SemVerLevel, CreateTagOptions } from '../types/index.js';
 
 /**
@@ -58,11 +59,13 @@ export async function createNewTag(
   prefix: string | undefined,
   options: Partial<CreateTagOptions> = {}
 ): Promise<{ success: boolean; message: string; tagName?: string }> {
+  const t = getTranslation();
+
   // Validar formato SemVer
   if (!isValidSemVer(version)) {
     return {
       success: false,
-      message: `La versión '${version}' no es válida según SemVer`,
+      message: t('validation.versionInvalid', { version }),
     };
   }
 
@@ -72,7 +75,7 @@ export async function createNewTag(
   if (!(await validateNewTag(tagName))) {
     return {
       success: false,
-      message: `El tag '${tagName}' ya existe`,
+      message: t('validation.tagAlreadyExists', { tag: tagName }),
     };
   }
 

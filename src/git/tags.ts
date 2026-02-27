@@ -1,5 +1,6 @@
 import { getGit } from './repo.js';
 import { parseTag } from '../domain/tag.js';
+import { getTranslation } from '../i18n/config.js';
 import type {
   Tag,
   CreateTagOptions,
@@ -71,29 +72,33 @@ export async function tagExists(tagName: string): Promise<boolean> {
  */
 export async function createTag(options: CreateTagOptions): Promise<GitOperationResult> {
   const { tagName, message, push = true, dryRun = false } = options;
+  const t = getTranslation();
 
   try {
     // Verificar si el tag ya existe
     if (await tagExists(tagName)) {
       return {
         success: false,
-        message: `El tag '${tagName}' ya existe`,
-        error: new Error('Tag duplicado'),
+        message: t('git.tagExists', { tag: tagName }),
+        error: new Error(t('git.tagDuplicate')),
       };
     }
 
     if (dryRun) {
       return {
         success: true,
-        message: `[DRY RUN] Se crearía el tag '${tagName}'${push ? ' y se subiría al remote' : ''}`,
+        message: `${t('git.dryRunCreate', { tag: tagName })}${push ? ` ${t('git.dryRunPush', { tag: tagName })}` : ''}`,
       };
     }
 
     const git = getGit();
 
     // Crear tag anotado con mensaje
-    const tagMessage = message ?? `Tag ${tagName}`;
+    const tagMessage = message ?? t('git.defaultMessage', { tag: tagName });
     await git.addAnnotatedTag(tagName, tagMessage);
+
+    // Obtener hash del commit
+    const hash = await git.revparse(['--short', 'HEAD']);
 
     // Push si está habilitado
     if (push) {
@@ -102,12 +107,12 @@ export async function createTag(options: CreateTagOptions): Promise<GitOperation
 
     return {
       success: true,
-      message: `Tag '${tagName}' creado exitosamente${push ? ' y subido al remote' : ''}`,
+      message: t('git.tagCreated', { tag: tagName, commit: hash }),
     };
   } catch (error) {
     return {
       success: false,
-      message: `Error al crear tag '${tagName}'`,
+      message: t('git.errorCreating', { tag: tagName }),
       error: error instanceof Error ? error : new Error(String(error)),
     };
   }
@@ -120,11 +125,13 @@ export async function createTag(options: CreateTagOptions): Promise<GitOperation
  * @returns Resultado de la operación
  */
 export async function pushTag(tagName: string, dryRun = false): Promise<GitOperationResult> {
+  const t = getTranslation();
+
   try {
     if (dryRun) {
       return {
         success: true,
-        message: `[DRY RUN] Se subiría el tag '${tagName}' al remote`,
+        message: t('git.dryRunPush', { tag: tagName }),
       };
     }
 
@@ -133,12 +140,12 @@ export async function pushTag(tagName: string, dryRun = false): Promise<GitOpera
 
     return {
       success: true,
-      message: `Tag '${tagName}' subido al remote`,
+      message: t('git.tagPushed', { tag: tagName }),
     };
   } catch (error) {
     return {
       success: false,
-      message: `Error al subir tag '${tagName}'`,
+      message: t('git.errorPushing', { tag: tagName }),
       error: error instanceof Error ? error : new Error(String(error)),
     };
   }
@@ -151,21 +158,22 @@ export async function pushTag(tagName: string, dryRun = false): Promise<GitOpera
  */
 export async function deleteTag(options: DeleteTagOptions): Promise<GitOperationResult> {
   const { tagName, deleteRemote = true, dryRun = false } = options;
+  const t = getTranslation();
 
   try {
     // Verificar que el tag existe
     if (!(await tagExists(tagName))) {
       return {
         success: false,
-        message: `El tag '${tagName}' no existe`,
-        error: new Error('Tag no encontrado'),
+        message: t('git.tagNotFound', { tag: tagName }),
+        error: new Error(t('git.tagNotFoundTitle')),
       };
     }
 
     if (dryRun) {
       return {
         success: true,
-        message: `[DRY RUN] Se eliminaría el tag '${tagName}'${deleteRemote ? ' local y remotamente' : ' localmente'}`,
+        message: `${t('git.dryRunDelete', { tag: tagName })}${deleteRemote ? ` ${t('git.dryRunDeleteRemote', { tag: tagName })}` : ''}`,
       };
     }
 
@@ -181,12 +189,12 @@ export async function deleteTag(options: DeleteTagOptions): Promise<GitOperation
 
     return {
       success: true,
-      message: `Tag '${tagName}' eliminado${deleteRemote ? ' local y remotamente' : ' localmente'}`,
+      message: t('git.tagDeleted', { tag: tagName }),
     };
   } catch (error) {
     return {
       success: false,
-      message: `Error al eliminar tag '${tagName}'`,
+      message: t('git.errorDeleting', { tag: tagName }),
       error: error instanceof Error ? error : new Error(String(error)),
     };
   }
@@ -202,11 +210,13 @@ export async function deleteRemoteTag(
   tagName: string,
   dryRun = false
 ): Promise<GitOperationResult> {
+  const t = getTranslation();
+
   try {
     if (dryRun) {
       return {
         success: true,
-        message: `[DRY RUN] Se eliminaría el tag '${tagName}' del remote`,
+        message: t('git.dryRunDeleteRemote', { tag: tagName }),
       };
     }
 
@@ -215,12 +225,12 @@ export async function deleteRemoteTag(
 
     return {
       success: true,
-      message: `Tag '${tagName}' eliminado del remote`,
+      message: t('git.tagDeletedRemote', { tag: tagName }),
     };
   } catch (error) {
     return {
       success: false,
-      message: `Error al eliminar tag '${tagName}' del remote`,
+      message: t('git.errorDeletingRemote', { tag: tagName }),
       error: error instanceof Error ? error : new Error(String(error)),
     };
   }

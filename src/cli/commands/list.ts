@@ -3,6 +3,7 @@ import * as tagService from '../../services/tagService.js';
 import { extractPrefixes } from '../../domain/tag.js';
 import { listTags } from '../../git/tags.js';
 import { showWarning } from '../../utils/validators.js';
+import { getTranslation } from '../../i18n/config.js';
 import type { CliArgs } from '../../types/index.js';
 
 /**
@@ -10,20 +11,21 @@ import type { CliArgs } from '../../types/index.js';
  * @param args - Argumentos de CLI
  */
 export async function listCommand(args: CliArgs): Promise<void> {
+  const t = getTranslation();
   const allTags = await listTags();
 
   if (allTags.length === 0) {
-    showWarning('No hay tags en el repositorio');
+    showWarning(t('commands.list.noTags'));
     return;
   }
 
   // Si solo se piden prefijos
   if (args.prefixes) {
     const prefixes = extractPrefixes(allTags);
-    console.log(chalk.bold('\nPrefijos disponibles:'));
+    console.log(chalk.bold(`\n${t('commands.list.availablePrefixes')}`));
     for (const prefix of prefixes) {
       if (prefix === null) {
-        console.log(chalk.gray('  (sin prefijo)'));
+        console.log(chalk.gray(`  ${t('commands.list.noPrefix')}`));
       } else {
         console.log(chalk.cyan(`  ${prefix}`));
       }
@@ -34,11 +36,11 @@ export async function listCommand(args: CliArgs): Promise<void> {
   // Listar agrupados por prefijo
   const groups = await tagService.groupByPrefix();
 
-  console.log(chalk.bold(`\nTags encontrados: ${allTags.length}\n`));
+  console.log(chalk.bold(`\n${t('commands.list.tagsFound', { count: allTags.length })}\n`));
 
   for (const group of groups) {
     const prefixLabel =
-      group.prefix === null ? chalk.gray('(sin prefijo)') : chalk.cyan(group.prefix);
+      group.prefix === null ? chalk.gray(t('commands.list.noPrefix')) : chalk.cyan(group.prefix);
     console.log(chalk.bold(`${prefixLabel}:`));
 
     for (let i = 0; i < group.tags.length; i++) {

@@ -7,6 +7,7 @@ import { newCommand } from './commands/new.js';
 import { nextCommand } from './commands/next.js';
 import { listCommand } from './commands/list.js';
 import { deleteCommand } from './commands/delete.js';
+import { initI18n, getTranslation } from '../i18n/config.js';
 import type { CliArgs, SemVerLevel } from '../types/index.js';
 
 declare const __VERSION__: string;
@@ -121,52 +122,57 @@ function mapShortcuts(args: CliArgs): CliArgs {
  * Muestra ayuda
  */
 function showHelp(): void {
-  console.log(chalk.bold('\nGit Tag Generate (gtg) - Generador de tags Git con SemVer\n'));
+  const t = getTranslation();
+  console.log(chalk.bold(`\n${t('help.title')}\n`));
 
-  console.log(chalk.bold('Uso:'));
-  console.log('  gtg                    Flujo inteligente: new si no hay tags, next si existen');
-  console.log('  gtg new                Crear primer tag');
-  console.log('  gtg next               Generar siguiente tag');
-  console.log('  gtg list               Listar tags');
-  console.log('  gtg delete             Eliminar tags (multi-select)\n');
+  console.log(chalk.bold(t('help.usage')));
+  console.log(`  gtg                    ${t('help.usageSmartFlow')}`);
+  console.log(`  gtg new                ${t('help.shortcutN')}`);
+  console.log(`  gtg next               ${t('help.shortcutX')}`);
+  console.log(`  gtg list               ${t('help.shortcutL')}`);
+  console.log(`  gtg delete             ${t('help.shortcutD')}\n`);
 
-  console.log(chalk.bold('Atajos:'));
-  console.log('  gtg patch              Equivale a: gtg next --level patch');
-  console.log('  gtg minor              Equivale a: gtg next --level minor');
-  console.log('  gtg major              Equivale a: gtg next --level major');
-  console.log('  gtg prepatch           Equivale a: gtg next --level prepatch');
-  console.log('  gtg preminor           Equivale a: gtg next --level preminor');
-  console.log('  gtg premajor           Equivale a: gtg next --level premajor');
-  console.log('  gtg prerelease         Equivale a: gtg next --level prerelease\n');
+  console.log(chalk.bold(t('help.shortcuts')));
+  console.log(`  gtg patch              ${t('help.shortcutPatch')}`);
+  console.log(`  gtg minor              ${t('help.shortcutMinor')}`);
+  console.log(`  gtg major              ${t('help.shortcutMajor')}`);
+  console.log(`  gtg prepatch           ${t('help.shortcutPrepatch')}`);
+  console.log(`  gtg preminor           ${t('help.shortcutPreminor')}`);
+  console.log(`  gtg premajor           ${t('help.shortcutPremajor')}`);
+  console.log(`  gtg prerelease         ${t('help.shortcutPrerelease')}\n`);
 
-  console.log(chalk.bold('Flags:'));
-  console.log('  -l, --level <nivel>    Especificar nivel: patch|minor|major|prepatch|...');
-  console.log('  --beta                 Usar identificador beta para prerelease');
-  console.log('  --alpha                Usar identificador alpha para prerelease');
-  console.log('  --id <id>              Identificador custom para prerelease');
-  console.log('  --noPush               No subir tag al remote');
-  console.log('  --dry-run              Simular sin crear tag');
-  console.log('  --prefixes             Solo listar prefijos (con comando list)');
-  console.log('  -v, --version          Mostrar versión del programa');
-  console.log('  -h, --help             Mostrar esta ayuda\n');
+  console.log(chalk.bold(t('help.flags')));
+  console.log(`  -l, --level <nivel>    ${t('help.flagLevel')}`);
+  console.log(`  --beta                 ${t('help.flagBeta')}`);
+  console.log(`  --alpha                ${t('help.flagAlpha')}`);
+  console.log(`  --id <id>              ${t('help.flagId')}`);
+  console.log(`  --noPush               ${t('help.flagNoRemote')}`);
+  console.log(`  --dry-run              ${t('help.flagDryRun')}`);
+  console.log(`  --prefixes             ${t('help.flagPrefixes')}`);
+  console.log(`  -v, --version          ${t('help.flagVersion')}`);
+  console.log(`  -h, --help             ${t('help.flagHelp')}\n`);
 
-  console.log(chalk.bold('Ejemplos:'));
-  console.log('  gtg new                        # Crear primer tag (0.0.1)');
-  console.log('  gtg patch                      # Incrementar patch (0.0.1 → 0.0.2)');
-  console.log('  gtg minor                      # Incrementar minor (0.0.2 → 0.1.0)');
-  console.log('  gtg major                      # Incrementar major (0.1.0 → 1.0.0)');
-  console.log('  gtg next --beta                # Crear prerelease beta');
-  console.log('  gtg prepatch --id rc           # Crear prepatch con id "rc"');
-  console.log('  gtg list --prefixes            # Listar solo prefijos');
-  console.log('  gtg delete                     # Eliminar tags (multi-select)');
-  console.log('  gtg patch --noPush             # Crear sin subir al remote');
-  console.log('  gtg major --dry-run            # Simular creación\n');
+  console.log(chalk.bold(t('help.examples')));
+  console.log(`  gtg new                        # ${t('help.example1')} (0.0.1)`);
+  console.log(`  gtg patch                      # ${t('help.example2')} (0.0.1 → 0.0.2)`);
+  console.log(`  gtg minor                      # ${t('help.example3')} (0.0.2 → 0.1.0)`);
+  console.log(`  gtg major                      # ${t('help.exampleMajor')} (0.1.0 → 1.0.0)`);
+  console.log(`  gtg next --beta                # ${t('help.exampleBeta')}`);
+  console.log(`  gtg prepatch --id rc           # ${t('help.examplePrepatch')}`);
+  console.log(`  gtg list --prefixes            # ${t('help.example5')}`);
+  console.log(`  gtg delete                     # ${t('help.exampleDelete')}`);
+  console.log(`  gtg patch --noPush             # ${t('help.exampleNoPush')}`);
+  console.log(`  gtg major --dry-run            # ${t('help.example4')}\n`);
 }
 
 /**
  * Función principal
  */
 async function main(): Promise<void> {
+  // Inicializar i18n antes que nada
+  await initI18n();
+  const t = getTranslation();
+
   const rawArgs = parseArgs();
   const args = mapShortcuts(rawArgs);
 
@@ -184,12 +190,12 @@ async function main(): Promise<void> {
 
   // Validar que estamos en un repo Git (excepto para help)
   if (!(await isGitRepo())) {
-    exitWithError('No estás en un repositorio Git válido');
+    exitWithError(t('cli.notGitRepo'));
   }
 
   // Validar que existe remote origin (excepto para list)
   if (args.command !== 'list' && !(await hasRemote('origin'))) {
-    exitWithError('No se encontró el remote "origin". Asegúrate de tener un remote configurado.');
+    exitWithError(t('cli.noRemoteOrigin'));
   }
 
   // Si no hay comando especificado, usar inteligencia
@@ -216,17 +222,19 @@ async function main(): Promise<void> {
         await deleteCommand(args);
         break;
       default:
-        console.error(chalk.red(`Comando desconocido: ${command}`));
-        console.log(chalk.gray('Usa "gtg --help" para ver comandos disponibles'));
+        console.error(chalk.red(t('cli.unknownCommand', { command })));
+        console.log(chalk.gray(t('cli.useHelp')));
         process.exit(1);
     }
   } catch (error) {
-    exitWithError(`Error inesperado: ${error instanceof Error ? error.message : String(error)}`);
+    exitWithError(
+      t('cli.unexpectedError', { message: error instanceof Error ? error.message : String(error) })
+    );
   }
 }
 
 // Ejecutar
 main().catch((error) => {
-  console.error(chalk.red('Error fatal:'), error);
+  console.error(chalk.red(getTranslation()('cli.fatalError')), error);
   process.exit(1);
 });
