@@ -79,12 +79,30 @@ export async function createNewTag(
     };
   }
 
+  // Determinar opciones de firma
+  // Los flags CLI tienen precedencia sobre la configuración de git
+  let signOption: boolean | undefined = options.sign;
+
+  if (signOption === undefined && !options.gpgSign) {
+    // No hay flag explícito, leer configuración de git
+    try {
+      const tagGpgSign = await gitRepo.getConfig('tag.gpgSign');
+      if (tagGpgSign === 'true') {
+        signOption = true;
+      }
+    } catch {
+      // Si falla la lectura, continuar sin firma (comportamiento por defecto)
+    }
+  }
+
   // Crear tag
   const result = await gitTags.createTag({
     tagName,
     message: options.message,
     push: options.push ?? true,
     dryRun: options.dryRun ?? false,
+    sign: signOption,
+    gpgSign: options.gpgSign,
   });
 
   return {

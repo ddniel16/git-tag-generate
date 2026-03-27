@@ -30,6 +30,9 @@
     "flagBeta": "Use beta identifier for prerelease",
     "flagAlpha": "Use alpha identifier for prerelease",
     "flagId": "Custom identifier for prerelease",
+    "flagSign": "Sign the tag with GPG/SSH",
+    "flagNoSign": "Do not sign the tag (override config)",
+    "flagGpgSign": "Sign with specific GPG key (optional: keyid)",
     "flagDryRun": "Dry run mode (does not execute changes)",
     "flagNoRemote": "Do not push tag to remote",
     "flagPrefixes": "Only list prefixes (with list command)",
@@ -45,7 +48,9 @@
     "exampleBeta": "Create beta prerelease",
     "examplePrepatch": "Create prepatch with id \"rc\"",
     "exampleDelete": "Delete tags (multi-select)",
-    "exampleNoPush": "Create without pushing to remote"
+    "exampleNoPush": "Create without pushing to remote",
+    "exampleSign": "Create signed tag with GPG/SSH",
+    "exampleGpgSign": "Sign with specific key"
   },
   "commands": {
     "new": {
@@ -121,7 +126,8 @@
     "prefixEmpty": "Prefix cannot be empty",
     "prefixInvalid": "Prefix '{{prefix}}' is not valid. Only lowercase letters, numbers and hyphens",
     "versionInvalid": "Version '{{version}}' is not valid according to SemVer",
-    "tagAlreadyExists": "Tag '{{tag}}' already exists"
+    "tagAlreadyExists": "The tag '{{tag}}' already exists",
+    "signFlagsConflict": "You cannot use --sign and --no-sign at the same time"
   },
   "common": {
     "error": "Error",

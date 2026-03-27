@@ -82,3 +82,18 @@ export async function getRemoteUrl(remoteName = 'origin'): Promise<string | null
     return null;
   }
 }
+
+/**
+ * Obtiene un valor de configuración de git
+ * @param key - Clave de configuración (ej: 'tag.gpgSign')
+ * @returns Valor de la configuración o null si no existe
+ */
+export async function getConfig(key: string): Promise<string | null> {
+  try {
+    const git = getGit();
+    const value = await git.raw(['config', '--get', key]);
+    return value.trim() || null;
+  } catch {
+    return null;
+  }
+}

@@ -30,6 +30,9 @@ export interface CliArgs {
   beta?: boolean;
   alpha?: boolean;
   id?: string;
+  sign?: boolean;
+  noSign?: boolean;
+  gpgSign?: string;
 }
 
 export interface GitOperationResult {
@@ -43,6 +46,8 @@ export interface CreateTagOptions {
   message?: string;
   push?: boolean;
   dryRun?: boolean;
+  sign?: boolean;
+  gpgSign?: string;
 }
 
 export interface DeleteTagOptions {

@@ -146,10 +146,17 @@ export async function nextCommand(args: CliArgs): Promise<void> {
     }
   }
 
+  // Validar flags de firma mutuamente exclusivos
+  if (args.sign && args.noSign) {
+    exitWithError(t('validation.signFlagsConflict'));
+  }
+
   // Generar siguiente tag
   const result = await tagService.generateNextTag(level, selectedPrefix, prereleaseId, {
     push: !args.noPush,
     dryRun: args.dryRun,
+    sign: args.sign ? true : args.noSign ? false : undefined,
+    gpgSign: args.gpgSign,
   });
 
   if (!result.success) {

@@ -30,6 +30,9 @@
     "flagBeta": "Usar identificador beta para prerelease",
     "flagAlpha": "Usar identificador alpha para prerelease",
     "flagId": "Identificador custom para prerelease",
+    "flagSign": "Firmar el tag con GPG/SSH",
+    "flagNoSign": "No firmar el tag (override de config)",
+    "flagGpgSign": "Firmar con clave GPG espec\u00edfica (opcional: keyid)",
     "flagDryRun": "Modo de prueba (no ejecuta cambios)",
     "flagNoRemote": "No subir tag al remote",
     "flagPrefixes": "Solo listar prefijos (con comando list)",
@@ -45,7 +48,9 @@
     "exampleBeta": "Crear prerelease beta",
     "examplePrepatch": "Crear prepatch con id \"rc\"",
     "exampleDelete": "Eliminar tags (multi-select)",
-    "exampleNoPush": "Crear sin subir al remote"
+    "exampleNoPush": "Crear sin subir al remote",
+    "exampleSign": "Crear tag firmado con GPG/SSH",
+    "exampleGpgSign": "Firmar con clave espec\u00edfica"
   },
   "commands": {
     "new": {
@@ -121,7 +126,8 @@
     "prefixEmpty": "El prefijo no puede estar vacío",
     "prefixInvalid": "El prefijo '{{prefix}}' no es válido. Solo letras minúsculas, números y guiones",
     "versionInvalid": "La versión '{{version}}' no es válida según SemVer",
-    "tagAlreadyExists": "El tag '{{tag}}' ya existe"
+    "tagAlreadyExists": "El tag '{{tag}}' ya existe",
+    "signFlagsConflict": "No puedes usar --sign y --no-sign al mismo tiempo"
   },
   "common": {
     "error": "Error",

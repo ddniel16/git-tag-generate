@@ -73,10 +73,17 @@ export async function newCommand(args: CliArgs): Promise<void> {
     process.exit(0);
   }
 
+  // Validar flags de firma mutuamente exclusivos
+  if (args.sign && args.noSign) {
+    exitWithError(t('validation.signFlagsConflict'));
+  }
+
   // Crear tag
   const result = await tagService.createNewTag(version, prefix, {
     push: !args.noPush,
     dryRun: args.dryRun,
+    sign: args.sign ? true : args.noSign ? false : undefined,
+    gpgSign: args.gpgSign,
   });
 
   if (!result.success) {

@@ -41,40 +41,129 @@ Al ejecutar `gtg` sin argumentos, la herramienta detecta automáticamente el est
 
 ### Comandos
 
-| Comando | Descripción |
-| - | - |
-| `gtg` | Flujo inteligente: `new` si no hay tags, `next` si ya existen |
-| `gtg new` | Crear primer tag con versión inicial `0.0.1` |
-| `gtg next` | Generar siguiente tag con incremento SemVer |
-| `gtg list` | Listar todos los tags agrupados por prefijo |
-| `gtg delete` | Eliminar tags con selección múltiple |
+| Comando      | Descripción                                                   |
+| ------------ | ------------------------------------------------------------- |
+| `gtg`        | Flujo inteligente: `new` si no hay tags, `next` si ya existen |
+| `gtg new`    | Crear primer tag con versión inicial `0.0.1`                  |
+| `gtg next`   | Generar siguiente tag con incremento SemVer                   |
+| `gtg list`   | Listar todos los tags agrupados por prefijo                   |
+| `gtg delete` | Eliminar tags con selección múltiple                          |
 
 ### Atajos
 
 Los siguientes atajos ejecutan `gtg next --level <nivel>`:
 
-| Atajo | Equivalente | Descripción |
-| - | - | - |
-| `gtg patch` | `gtg next -l patch` | Incrementa versión patch (0.0.X) |
-| `gtg minor` | `gtg next -l minor` | Incrementa versión minor (0.X.0) |
-| `gtg major` | `gtg next -l major` | Incrementa versión major (X.0.0) |
-| `gtg prepatch` | `gtg next -l prepatch` | Prepatch con prerelease (0.0.X-beta.0) |
-| `gtg preminor` | `gtg next -l preminor` | Preminor con prerelease (0.X.0-beta.0) |
-| `gtg premajor` | `gtg next -l premajor` | Premajor con prerelease (X.0.0-beta.0) |
-| `gtg prerelease` | `gtg next -l prerelease` | Incrementa número de prerelease |
+| Atajo            | Equivalente              | Descripción                            |
+| ---------------- | ------------------------ | -------------------------------------- |
+| `gtg patch`      | `gtg next -l patch`      | Incrementa versión patch (0.0.X)       |
+| `gtg minor`      | `gtg next -l minor`      | Incrementa versión minor (0.X.0)       |
+| `gtg major`      | `gtg next -l major`      | Incrementa versión major (X.0.0)       |
+| `gtg prepatch`   | `gtg next -l prepatch`   | Prepatch con prerelease (0.0.X-beta.0) |
+| `gtg preminor`   | `gtg next -l preminor`   | Preminor con prerelease (0.X.0-beta.0) |
+| `gtg premajor`   | `gtg next -l premajor`   | Premajor con prerelease (X.0.0-beta.0) |
+| `gtg prerelease` | `gtg next -l prerelease` | Incrementa número de prerelease        |
 
 ### Flags
 
-| Flag | Alias | Descripción |
-| - | - | - |
-| `--level <nivel>` | `-l` | Especifica nivel de incremento SemVer |
-| `--beta` | - | Usa identificador `beta` para prerelease |
-| `--alpha` | - | Usa identificador `alpha` para prerelease |
-| `--id <id>` | - | Identificador personalizado para prerelease |
-| `--noPush` | - | Crea el tag localmente sin subirlo al remote |
-| `--dry-run` | - | Simula la operación sin crear el tag |
-| `--prefixes` | - | Lista solo los prefijos disponibles (con `list`) |
-| `--help` | `-h` | Muestra ayuda |
+| Flag                 | Alias | Descripción                                      |
+| -------------------- | ----- | ------------------------------------------------ |
+| `--level <nivel>`    | `-l`  | Especifica nivel de incremento SemVer            |
+| `--beta`             | -     | Usa identificador `beta` para prerelease         |
+| `--alpha`            | -     | Usa identificador `alpha` para prerelease        |
+| `--id <id>`          | -     | Identificador personalizado para prerelease      |
+| `--sign`             | `-s`  | Firma el tag con GPG/SSH                         |
+| `--no-sign`          | -     | No firma el tag (override de config)             |
+| `--gpg-sign [keyid]` | -     | Firma con una clave GPG específica (opcional)    |
+| `--noPush`           | -     | Crea el tag localmente sin subirlo al remote     |
+| `--dry-run`          | -     | Simula la operación sin crear el tag             |
+| `--prefixes`         | -     | Lista solo los prefijos disponibles (con `list`) |
+| `--help`             | `-h`  | Muestra ayuda                                    |
+
+## Firma de Tags
+
+La herramienta soporta firma de tags con GPG o SSH, respetando automáticamente la configuración de git.
+
+### Configuración automática
+
+Si tienes configurado `tag.gpgSign=true` en tu repositorio o de manera global, los tags se firmarán automáticamente:
+
+```bash
+# Configurar firma automática en el repositorio
+git config tag.gpgSign true
+# O configurar firma automática globalmente para todos los repositorios
+git config tag.gpgSign true --global
+
+# Ahora todos los tags se firman sin necesidad de flags
+gtg patch    # Tag firmado automáticamente
+```
+
+### Firma manual con flags
+
+Puedes controlar la firma con flags CLI que tienen precedencia sobre la configuración:
+
+```bash
+# Firmar con clave GPG por defecto
+gtg patch --sign
+gtg major -s
+
+# Firmar con clave GPG específica
+gtg minor --gpg-sign 3AA5C34371567BD2
+
+# Deshabilitar firma (override de config)
+gtg patch --no-sign
+```
+
+### Formatos soportados
+
+La herramienta soporta todos los formatos de firma que git permite:
+
+- **GPG** (openpgp): formato tradicional con claves GPG
+- **SSH**: firma con claves SSH (git 2.34+)
+- **x509**: certificados x509
+
+El formato se determina automáticamente según tu configuración de git (`gpg.format`).
+
+### Configuración GPG
+
+```bash
+# Listar claves GPG disponibles
+gpg --list-secret-keys --keyid-format=long
+
+# Configurar clave de firma en git
+git config user.signingKey 3AA5C34371567BD2
+
+# Habilitar firma automática de tags
+git config tag.gpgSign true
+```
+
+### Configuración SSH
+
+```bash
+# Configurar formato SSH
+git config gpg.format ssh
+
+# Configurar clave SSH para firma
+git config user.signingKey ~/.ssh/id_ed25519.pub
+
+# Habilitar firma automática de tags
+git config tag.gpgSign true
+```
+
+### Verificación en GitHub
+
+Para que tus tags firmados aparezcan como "Verified" en GitHub:
+
+1. **GPG**: Agrega tu clave pública GPG en GitHub Settings → SSH and GPG keys
+2. **SSH**: Marca tu clave SSH como "Signing Key" al agregarla en GitHub
+3. El email en la clave debe coincidir con el email de tus commits en GitHub
+
+### Compatibilidad
+
+La herramienta funciona correctamente en:
+
+- ✅ **Repositorios sin firma configurada** (comportamiento por defecto)
+- ✅ **Repositorios con `tag.gpgSign=true`** (firma automática)
+- ✅ **Override manual** con `--sign` o `--no-sign`
 
 ## Ejemplos
 
@@ -173,6 +262,12 @@ gtg patch --noPush
 
 # Simular creación (dry run)
 gtg major --dry-run
+
+# Crear tag firmado
+gtg patch --sign
+
+# Firmar con clave específica
+gtg major --gpg-sign 3AA5C34371567BD2
 
 # Combinar flags
 gtg prepatch --beta --noPush --dry-run

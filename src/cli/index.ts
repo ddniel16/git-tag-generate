@@ -60,6 +60,18 @@ function parseArgs(): CliArgs {
       continue;
     }
 
+    if (arg === '-s' || arg === '--sign') {
+      args.sign = true;
+      i++;
+      continue;
+    }
+
+    if (arg === '--no-sign') {
+      args.noSign = true;
+      i++;
+      continue;
+    }
+
     // Flags con valor
     if (arg === '-l' || arg === '--level') {
       const level = rawArgs[i + 1];
@@ -75,6 +87,21 @@ function parseArgs(): CliArgs {
       if (id && !id.startsWith('-')) {
         args.id = id;
         i += 2;
+        continue;
+      }
+    }
+
+    if (arg === '--gpg-sign') {
+      const keyId = rawArgs[i + 1];
+      // --gpg-sign puede usarse sin valor (firma con clave por defecto)
+      if (keyId && !keyId.startsWith('-')) {
+        args.gpgSign = keyId;
+        i += 2;
+        continue;
+      } else {
+        // Sin keyId específico, simplemente habilita firma
+        args.sign = true;
+        i++;
         continue;
       }
     }
@@ -146,6 +173,9 @@ function showHelp(): void {
   console.log(`  --beta                 ${t('help.flagBeta')}`);
   console.log(`  --alpha                ${t('help.flagAlpha')}`);
   console.log(`  --id <id>              ${t('help.flagId')}`);
+  console.log(`  -s, --sign             ${t('help.flagSign')}`);
+  console.log(`  --no-sign              ${t('help.flagNoSign')}`);
+  console.log(`  --gpg-sign [keyid]     ${t('help.flagGpgSign')}`);
   console.log(`  --noPush               ${t('help.flagNoRemote')}`);
   console.log(`  --dry-run              ${t('help.flagDryRun')}`);
   console.log(`  --prefixes             ${t('help.flagPrefixes')}`);
@@ -162,7 +192,9 @@ function showHelp(): void {
   console.log(`  gtg list --prefixes            # ${t('help.example5')}`);
   console.log(`  gtg delete                     # ${t('help.exampleDelete')}`);
   console.log(`  gtg patch --noPush             # ${t('help.exampleNoPush')}`);
-  console.log(`  gtg major --dry-run            # ${t('help.example4')}\n`);
+  console.log(`  gtg major --dry-run            # ${t('help.example4')}`);
+  console.log(`  gtg patch --sign               # ${t('help.exampleSign')}`);
+  console.log(`  gtg major --gpg-sign KEYID     # ${t('help.exampleGpgSign')}\n`);
 }
 
 /**

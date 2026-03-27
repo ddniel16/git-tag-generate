@@ -95,7 +95,23 @@ export async function createTag(options: CreateTagOptions): Promise<GitOperation
 
     // Crear tag anotado con mensaje
     const tagMessage = message ?? t('git.defaultMessage', { tag: tagName });
-    await git.addAnnotatedTag(tagName, tagMessage);
+
+    // Construir argumentos para el comando git tag
+    const tagArgs = ['-a', tagName, '-m', tagMessage];
+
+    // Agregar flags de firma según opciones
+    if (options.gpgSign) {
+      // -u <keyid> implica firma
+      tagArgs.push('-u', options.gpgSign);
+    } else if (options.sign === true) {
+      tagArgs.push('-s');
+    } else if (options.sign === false) {
+      // Override explícito de la configuración git
+      tagArgs.push('--no-sign');
+    }
+    // Si sign es undefined, git usa su comportamiento por defecto (respeta tag.gpgSign)
+
+    await git.tag(tagArgs);
 
     // Obtener hash del commit
     const hash = await git.revparse(['--short', 'HEAD']);
