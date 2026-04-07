@@ -36,9 +36,6 @@ export async function initI18n(): Promise<void> {
     // Idioma detectado del sistema
     lng: systemLang,
 
-    // No mostrar aviso de soporte de idiomas
-    showSupportNotice: false,
-
     // Idioma de fallback
     fallbackLng: 'en',
 

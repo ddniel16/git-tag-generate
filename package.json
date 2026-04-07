@@ -57,25 +57,36 @@
     "postversion": "git push && git push --tags"
   },
   "dependencies": {
-    "@inquirer/prompts": "^8.2.0",
+    "@inquirer/prompts": "^8.3.2",
     "chalk": "^5.6.2",
-    "i18next": "^25.8.4",
-    "i18next-fs-backend": "^2.6.1",
+    "i18next": "^26.0.3",
+    "i18next-fs-backend": "^2.6.3",
     "semver": "^7.7.4",
-    "simple-git": "^3.30.0"
+    "simple-git": "^3.35.2"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.2",
-    "@types/node": "^20.19.32",
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^24.0.0",
     "@types/semver": "^7.7.1",
-    "@typescript-eslint/eslint-plugin": "^8.54.0",
-    "@typescript-eslint/parser": "^8.54.0",
-    "@vitest/coverage-v8": "^4.0.18",
-    "esbuild": "^0.27.3",
-    "eslint": "^9.39.2",
+    "@typescript-eslint/eslint-plugin": "^8.58.0",
+    "@typescript-eslint/parser": "^8.58.0",
+    "@vitest/coverage-v8": "^4.1.2",
+    "esbuild": "^0.28.0",
+    "eslint": "^10.2.0",
     "eslint-config-prettier": "^10.1.8",
     "prettier": "^3.8.1",
-    "typescript": "^5.9.3",
-    "vitest": "^4.0.18"
+    "typescript": "^6.0.2",
+    "vitest": "^4.1.2"
+  },
+  "pnpm": {
+    "peerDependencyRules": {
+      "allowedVersions": {
+        "vite>esbuild": "0.28.0"
+      },
+      "ignoreMissing": [
+        "@emnapi/core",
+        "@emnapi/runtime"
+      ]
+    }
   }
 }
