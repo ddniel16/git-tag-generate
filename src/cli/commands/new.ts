@@ -1,5 +1,5 @@
 import { input, confirm } from '@inquirer/prompts';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import { normalizePrefix, isValidPrefix } from '../../utils/slug.js';
 import { DEFAULT_INITIAL_VERSION } from '../../domain/semver.js';
 import * as tagService from '../../services/tagService.js';
@@ -19,14 +19,14 @@ export async function newCommand(args: CliArgs): Promise<void> {
   const branchStatus = await tagService.checkBranchStatus();
   if (branchStatus.shouldWarn) {
     showWarning(
-      t('commands.new.noBranchWarning', { branch: chalk.yellow(branchStatus.currentBranch) })
+      t('commands.new.noBranchWarning', { branch: styleText('yellow', branchStatus.currentBranch) })
     );
     const continueAnyway = await confirm({
       message: t('commands.new.continueAnyway'),
       default: false,
     });
     if (!continueAnyway) {
-      console.log(chalk.gray(t('commands.new.operationCancelled')));
+      console.log(styleText('gray', t('commands.new.operationCancelled')));
       process.exit(0);
     }
   }
@@ -54,22 +54,22 @@ export async function newCommand(args: CliArgs): Promise<void> {
     });
 
     prefix = normalizePrefix(prefixInput);
-    showInfo(t('commands.new.prefixNormalized', { prefix: chalk.cyan(prefix) }));
+    showInfo(t('commands.new.prefixNormalized', { prefix: styleText('cyan', prefix) }));
   }
 
   // Mostrar versión inicial
   const version = DEFAULT_INITIAL_VERSION;
-  showInfo(t('commands.new.initialVersion', { version: chalk.cyan(version) }));
+  showInfo(t('commands.new.initialVersion', { version: styleText('cyan', version) }));
 
   // Confirmar creación
   const tagName = prefix ? `${prefix}-${version}` : version;
   const confirmCreate = await confirm({
-    message: t('commands.new.confirmCreate', { tag: chalk.green(tagName) }),
+    message: t('commands.new.confirmCreate', { tag: styleText('green', tagName) }),
     default: true,
   });
 
   if (!confirmCreate) {
-    console.log(chalk.gray(t('commands.new.operationCancelled')));
+    console.log(styleText('gray', t('commands.new.operationCancelled')));
     process.exit(0);
   }
 

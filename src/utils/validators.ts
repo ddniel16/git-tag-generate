@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 /**
  * Formatea un error para mostrar al usuario
@@ -18,7 +18,7 @@ export function formatError(error: unknown): string {
  * @param exitCode - Código de salida (default: 1)
  */
 export function exitWithError(message: string, exitCode = 1): never {
-  console.error(chalk.red('✗'), message);
+  console.error(styleText('red', '✗'), message);
   process.exit(exitCode);
 }
 
@@ -27,7 +27,7 @@ export function exitWithError(message: string, exitCode = 1): never {
  * @param message - Mensaje de éxito
  */
 export function showSuccess(message: string): void {
-  console.log(chalk.green('✓'), message);
+  console.log(styleText('green', '✓'), message);
 }
 
 /**
@@ -35,7 +35,7 @@ export function showSuccess(message: string): void {
  * @param message - Mensaje de advertencia
  */
 export function showWarning(message: string): void {
-  console.log(chalk.yellow('⚠'), message);
+  console.log(styleText('yellow', '⚠'), message);
 }
 
 /**
@@ -43,5 +43,5 @@ export function showWarning(message: string): void {
  * @param message - Mensaje informativo
  */
 export function showInfo(message: string): void {
-  console.log(chalk.blue('ℹ'), message);
+  console.log(styleText('blue', 'ℹ'), message);
 }

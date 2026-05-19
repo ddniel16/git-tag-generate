@@ -1,5 +1,5 @@
 import { select, confirm, input } from '@inquirer/prompts';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import * as tagService from '../../services/tagService.js';
 import { extractPrefixes } from '../../domain/tag.js';
 import { listTags } from '../../git/tags.js';
@@ -31,13 +31,13 @@ export async function nextCommand(args: CliArgs): Promise<void> {
   // Si hay múltiples prefijos o prefijos + sin prefijo, preguntar
   if (prefixes.length > 1 || (prefixes.length === 1 && prefixes[0] !== null)) {
     const prefixChoices = prefixes.map((p) => ({
-      name: p ?? chalk.gray(t('commands.list.noPrefix')),
+      name: p ?? styleText('gray', t('commands.list.noPrefix')),
       value: p,
     }));
 
     // Añadir opción para crear nuevo prefijo
     prefixChoices.push({
-      name: chalk.green(t('commands.next.createNewPrefix')),
+      name: styleText('green', t('commands.next.createNewPrefix')),
       value: '__new__',
     });
 
@@ -61,7 +61,7 @@ export async function nextCommand(args: CliArgs): Promise<void> {
         },
       });
       selectedPrefix = normalizePrefix(newPrefixInput);
-      showInfo(t('commands.new.prefixNormalized', { prefix: chalk.cyan(selectedPrefix) }));
+      showInfo(t('commands.new.prefixNormalized', { prefix: styleText('cyan', selectedPrefix) }));
     } else {
       selectedPrefix = prefixChoice ?? undefined;
     }
@@ -75,7 +75,10 @@ export async function nextCommand(args: CliArgs): Promise<void> {
 
   if (lastTag) {
     showInfo(
-      t('commands.next.lastTag', { tag: chalk.cyan(lastTag.fullName), version: lastTag.version })
+      t('commands.next.lastTag', {
+        tag: styleText('cyan', lastTag.fullName),
+        version: lastTag.version,
+      })
     );
   } else {
     showInfo(t('commands.next.noPreviousTags'));
@@ -134,14 +137,14 @@ export async function nextCommand(args: CliArgs): Promise<void> {
   const branchStatus = await tagService.checkBranchStatus();
   if (branchStatus.shouldWarn) {
     showWarning(
-      t('commands.next.confirmBranch', { branch: chalk.yellow(branchStatus.currentBranch) })
+      t('commands.next.confirmBranch', { branch: styleText('yellow', branchStatus.currentBranch) })
     );
     const continueAnyway = await confirm({
       message: t('commands.new.continueAnyway'),
       default: false,
     });
     if (!continueAnyway) {
-      console.log(chalk.gray(t('commands.new.operationCancelled')));
+      console.log(styleText('gray', t('commands.new.operationCancelled')));
       process.exit(0);
     }
   }

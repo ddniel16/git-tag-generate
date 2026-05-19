@@ -1,5 +1,5 @@
 import { checkbox, confirm } from '@inquirer/prompts';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import { listTags, deleteTag } from '../../git/tags.js';
 import { showSuccess, showWarning, showInfo } from '../../utils/validators.js';
 import { getTranslation } from '../../i18n/config.js';
@@ -24,21 +24,23 @@ export async function deleteCommand(args: CliArgs): Promise<void> {
   const selectedTags = await checkbox({
     message: t('commands.delete.selectPrompt'),
     choices: allTags.map((tag) => ({
-      name: `${tag.fullName} ${tag.date ? chalk.gray(`(${tag.date})`) : ''}`,
+      name: `${tag.fullName} ${tag.date ? styleText('gray', `(${tag.date})`) : ''}`,
       value: tag.fullName,
     })),
     pageSize: 15,
   });
 
   if (selectedTags.length === 0) {
-    console.log(chalk.gray(t('commands.delete.noneSelected')));
+    console.log(styleText('gray', t('commands.delete.noneSelected')));
     return;
   }
 
   // Mostrar resumen
-  console.log(chalk.yellow(`\n${t('commands.delete.toDelete', { count: selectedTags.length })}`));
+  console.log(
+    styleText('yellow', `\n${t('commands.delete.toDelete', { count: selectedTags.length })}`)
+  );
   for (const tagName of selectedTags) {
-    console.log(chalk.red(`  - ${tagName}`));
+    console.log(styleText('red', `  - ${tagName}`));
   }
 
   // Confirmar eliminación
@@ -48,7 +50,7 @@ export async function deleteCommand(args: CliArgs): Promise<void> {
   });
 
   if (!confirmDelete) {
-    console.log(chalk.gray(t('commands.new.operationCancelled')));
+    console.log(styleText('gray', t('commands.new.operationCancelled')));
     return;
   }
 
@@ -67,7 +69,7 @@ export async function deleteCommand(args: CliArgs): Promise<void> {
       showSuccess(`${tagName}: ${result.message}`);
       successCount++;
     } else {
-      console.error(chalk.red(`✗ ${tagName}: ${result.message}`));
+      console.error(styleText('red', `✗ ${tagName}: ${result.message}`));
       errorCount++;
     }
   }

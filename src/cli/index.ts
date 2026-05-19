@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import { isGitRepo, hasRemote } from '../git/repo.js';
 import { exitWithError } from '../utils/validators.js';
 import { newCommand } from './commands/new.js';
@@ -150,16 +150,16 @@ function mapShortcuts(args: CliArgs): CliArgs {
  */
 function showHelp(): void {
   const t = getTranslation();
-  console.log(chalk.bold(`\n${t('help.title')}\n`));
+  console.log(styleText('bold', `\n${t('help.title')}\n`));
 
-  console.log(chalk.bold(t('help.usage')));
+  console.log(styleText('bold', t('help.usage')));
   console.log(`  gtg                    ${t('help.usageSmartFlow')}`);
   console.log(`  gtg new                ${t('help.shortcutN')}`);
   console.log(`  gtg next               ${t('help.shortcutX')}`);
   console.log(`  gtg list               ${t('help.shortcutL')}`);
   console.log(`  gtg delete             ${t('help.shortcutD')}\n`);
 
-  console.log(chalk.bold(t('help.shortcuts')));
+  console.log(styleText('bold', t('help.shortcuts')));
   console.log(`  gtg patch              ${t('help.shortcutPatch')}`);
   console.log(`  gtg minor              ${t('help.shortcutMinor')}`);
   console.log(`  gtg major              ${t('help.shortcutMajor')}`);
@@ -168,7 +168,7 @@ function showHelp(): void {
   console.log(`  gtg premajor           ${t('help.shortcutPremajor')}`);
   console.log(`  gtg prerelease         ${t('help.shortcutPrerelease')}\n`);
 
-  console.log(chalk.bold(t('help.flags')));
+  console.log(styleText('bold', t('help.flags')));
   console.log(`  -l, --level <nivel>    ${t('help.flagLevel')}`);
   console.log(`  --beta                 ${t('help.flagBeta')}`);
   console.log(`  --alpha                ${t('help.flagAlpha')}`);
@@ -182,7 +182,7 @@ function showHelp(): void {
   console.log(`  -v, --version          ${t('help.flagVersion')}`);
   console.log(`  -h, --help             ${t('help.flagHelp')}\n`);
 
-  console.log(chalk.bold(t('help.examples')));
+  console.log(styleText('bold', t('help.examples')));
   console.log(`  gtg new                        # ${t('help.example1')} (0.0.1)`);
   console.log(`  gtg patch                      # ${t('help.example2')} (0.0.1 → 0.0.2)`);
   console.log(`  gtg minor                      # ${t('help.example3')} (0.0.2 → 0.1.0)`);
@@ -254,8 +254,8 @@ async function main(): Promise<void> {
         await deleteCommand(args);
         break;
       default:
-        console.error(chalk.red(t('cli.unknownCommand', { command })));
-        console.log(chalk.gray(t('cli.useHelp')));
+        console.error(styleText('red', t('cli.unknownCommand', { command })));
+        console.log(styleText('gray', t('cli.useHelp')));
         process.exit(1);
     }
   } catch (error) {
@@ -267,6 +267,6 @@ async function main(): Promise<void> {
 
 // Ejecutar
 main().catch((error) => {
-  console.error(chalk.red(getTranslation()('cli.fatalError')), error);
+  console.error(styleText('red', getTranslation()('cli.fatalError')), error);
   process.exit(1);
 });
