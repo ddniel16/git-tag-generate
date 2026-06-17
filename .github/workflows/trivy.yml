@@ -3,8 +3,13 @@ name: Trivy Scan
 on:
   push:
     tags:
-      - "*.*.*"
+      - "[0-9]+.[0-9]+.[0-9]+"
   pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   trivy-scan:
@@ -17,7 +22,7 @@ jobs:
       - name: Trivy Scan
         uses: docker://docker.io/aquasec/trivy:latest
         with:
-          args: fs --exit-code 1 --no-progress --severity HIGH,CRITICAL --format json --output /github/workspace/trivy-results.json .
+          args: fs --exit-code 1 --no-progress --include-dev-deps --severity HIGH,CRITICAL --format json --output /github/workspace/trivy-results.json .
 
       - name: Generar resumen
         if: always()
