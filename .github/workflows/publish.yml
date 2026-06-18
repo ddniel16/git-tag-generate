@@ -1,0 +1,59 @@
+# This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
+# For more information see: https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
+
+name: Build, Lint, Test & Release by npmjs.com
+
+on:
+  push:
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+"
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
+jobs:
+  publish:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/') && github.event.base_ref == 'refs/heads/main'
+    environment:
+      name: publish-npmjs
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Cache pnpm lockfile
+        uses: actions/cache@v5
+        with:
+          path: |
+            node_modules/
+            ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-lock-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-pnpm-lock-
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+          registry-url: https://registry.npmjs.org/
+
+      - uses: pnpm/action-setup@v6
+        with:
+          package_json_file: package.json
+
+      - name: Configure pnpm store
+        run: pnpm config set store-dir ~/.pnpm-store
+
+      - name: Install dependencies
+        run: pnpm ci
+
+      - name: Build project
+        run: node --run build
+
+      - name: Publish to npm (dry-run)
+        run: pnpm publish --dry-run --access public --no-git-checks --provenance
+
+      - name: Publish to npm
+        run: pnpm publish --access public --no-git-checks --provenance
