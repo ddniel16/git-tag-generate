@@ -13,13 +13,7 @@ export interface TagGroup {
 }
 
 export type SemVerLevel =
-  | 'patch'
-  | 'minor'
-  | 'major'
-  | 'prepatch'
-  | 'preminor'
-  | 'premajor'
-  | 'prerelease';
+  'patch' | 'minor' | 'major' | 'prepatch' | 'preminor' | 'premajor' | 'prerelease';
 
 export interface CliArgs {
   command?: string;
