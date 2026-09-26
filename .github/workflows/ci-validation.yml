@@ -1,4 +1,4 @@
-name: Checks & Build
+name: CI Validation
 
 on:
   pull_request:
@@ -6,7 +6,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  checks-build:
+  checks-and-build:
+    name: Checks and Build
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -53,3 +54,15 @@ jobs:
 
       - name: Run build
         run: node --run build
+
+      - name: Verify dist files
+        run: |
+          if [ ! -d "dist" ]; then
+            echo "Error: dist directory not created"
+            exit 1
+          fi
+          if [ ! -f "dist/main.js" ]; then
+            echo "Error: dist/main.js not created"
+            exit 1
+          fi
+          echo "✓ Build artifacts verified"
