@@ -67,8 +67,7 @@ jobs:
     needs: lint-test-build
     if: github.event.base_ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
     environment:
-      name: publish-npm
-      url: https://github.com/${{ github.repository }}/packages
+      name: publish-npmjs
     steps:
       - name: Checkout
         uses: actions/checkout@v6

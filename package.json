@@ -1,11 +1,15 @@
 {
   "name": "git-tag-generate",
-  "homepage": "https://github.com/ddniel16/git-tag-generate",
+  "description": "CLI to generate Git tags with SemVer and prefixes, designed for fast release workflows.",
+  "homepage": "https://github.com/ddniel16/git-tag-generate#readme",
   "version": "1.3.2",
   "license": "GPL-3.0",
   "author": {
     "name": "ddniel16",
     "url": "https://github.com/ddniel16"
+  },
+  "bugs": {
+    "url": "https://github.com/ddniel16/git-tag-generate/issues"
   },
   "type": "module",
   "bin": {
@@ -20,27 +24,40 @@
   "engines": {
     "node": ">=20.12.0"
   },
-  "packageManager": "pnpm@11.1.3",
+  "packageManager": "pnpm@12.4.2",
   "preferGlobal": true,
   "keywords": [
     "git",
     "tag",
-    "git-tag-generate",
-    "version",
     "release",
-    "git-tag",
     "semver",
+    "version",
+    "versioning",
     "cli",
-    "typescript"
+    "git-tag",
+    "git-tag-generate",
+    "i18n",
+    "multi-language"
   ],
+  "i18n": {
+    "locales": [
+      "en",
+      "es"
+    ],
+    "defaultLocale": "en",
+    "supportedLanguages": [
+      "en",
+      "es"
+    ]
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ddniel16/git-tag-generate.git"
   },
   "scripts": {
-    "clean": "node -e \"try { require('fs').rmSync('dist', { recursive: true, force: true }) } catch(e){}\"",
-    "build": "node --run clean && node --run validate && node esbuild.config.mjs",
-    "validate": "node --run lint && node --run type-check && node --run format",
+    "clean": "node --input-type=module -e \"import { rmSync } from 'node:fs'; rmSync('dist', { recursive: true, force: true });\"",
+    "build": "node --run clean && node --run check && node esbuild.config.mjs",
+    "check": "node --run lint && node --run typecheck && node --run format",
     "postbuild": "chmod +x dist/main.js",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -50,31 +67,37 @@
     "lint:fix": "eslint src --fix",
     "format": "prettier --check \"src/**/*.ts\"",
     "format:fix": "prettier --write \"src/**/*.ts\"",
-    "type-check": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
     "link": "pnpm link --global",
     "unlink": "pnpm unlink --global",
     "preversion": "node --run test && node --run build",
     "postversion": "git push && git push --tags"
   },
   "dependencies": {
-    "@inquirer/prompts": "^8.4.3",
-    "i18next": "^26.1.0",
-    "i18next-fs-backend": "^2.6.5",
-    "semver": "^7.8.0",
+    "@inquirer/prompts": "^8.7.2",
+    "i18next": "^26.4.2",
+    "i18next-fs-backend": "^2.6.8",
+    "semver": "^7.8.5",
     "simple-git": "^3.36.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@types/node": "^24.12.4",
-    "@types/semver": "^7.7.1",
-    "@typescript-eslint/eslint-plugin": "^8.59.3",
-    "@typescript-eslint/parser": "^8.59.3",
-    "@vitest/coverage-v8": "^4.1.6",
-    "esbuild": "^0.28.0",
-    "eslint": "^10.3.0",
+    "@types/node": "^20.19.43",
+    "@types/semver": "^7.8.0",
+    "@typescript-eslint/eslint-plugin": "^8.70.0",
+    "@typescript-eslint/parser": "^8.70.0",
+    "@typescript/native": "npm:typescript@^7.0.2",
+    "@vitest/coverage-v8": "^5.0.0",
+    "esbuild": "^0.28.2",
+    "eslint": "^10.10.0",
     "eslint-config-prettier": "^10.1.8",
-    "prettier": "^3.8.3",
-    "typescript": "^6.0.3",
-    "vitest": "^4.1.6"
-  }
+    "prettier": "^3.9.6",
+    "typescript": "npm:@typescript/typescript6@^6.0.2",
+    "vitest": "^5.0.0"
+  },
+  "publishConfig": {
+    "provenance": true,
+    "access": "public"
+  },
+  "trustedDependencies": []
 }
