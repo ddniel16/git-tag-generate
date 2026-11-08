@@ -2,43 +2,37 @@ name: CI Validation
 
 on:
   pull_request:
-    branches: [main]
+    types:
+      - opened
+      - synchronize
+      - reopened
+    branches:
+      - main
   workflow_dispatch:
+  workflow_call:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   checks-and-build:
     name: Checks and Build
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     defaults:
       run:
         shell: bash
+        working-directory: .
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
-
-      - name: Cache pnpm lockfile
-        uses: actions/cache@v5
         with:
-          path: |
-            node_modules/
-            ~/.pnpm-store
-          key: ${{ runner.os }}-pnpm-lock-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-pnpm-lock-
+          persist-credentials: false
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version-file: .node-version
-
-      - uses: pnpm/action-setup@v6
-        with:
-          package_json_file: package.json
-
-      - name: Configure pnpm store
-        run: pnpm config set store-dir ~/.pnpm-store
-
-      - name: Install dependencies
-        run: pnpm ci
+      - name: Setup (Code + Node + pnpm)
+        uses: ./.github/actions/setup-node-pnpm
 
       - name: Run lint
         run: node --run lint
@@ -47,7 +41,7 @@ jobs:
         run: node --run format
 
       - name: Run type-check
-        run: node --run type-check
+        run: node --run typecheck
 
       - name: Run tests
         run: node --run test
