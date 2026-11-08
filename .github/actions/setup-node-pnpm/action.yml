@@ -1,0 +1,21 @@
+name: Setup Node + pnpm
+
+runs:
+  using: composite
+  steps:
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v6
+      with:
+        package_json_file: ./package.json
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v7
+      with:
+        node-version-file: ./.node-version
+        cache: pnpm
+        cache-dependency-path: ./pnpm-lock.yaml
+
+    - name: Install dependencies
+      working-directory: ./
+      shell: bash
+      run: pnpm ci
