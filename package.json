@@ -2,7 +2,7 @@
   "name": "git-tag-generate",
   "description": "CLI to generate Git tags with SemVer and prefixes, designed for fast release workflows.",
   "homepage": "https://github.com/ddniel16/git-tag-generate#readme",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "license": "GPL-3.0",
   "author": {
     "name": "ddniel16",
