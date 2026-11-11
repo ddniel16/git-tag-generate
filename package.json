@@ -22,7 +22,7 @@
     "LICENSE.md"
   ],
   "engines": {
-    "node": ">=20.12.0"
+    "node": ">=22.13.0"
   },
   "packageManager": "pnpm@12.4.2",
   "preferGlobal": true,
@@ -74,26 +74,26 @@
     "postversion": "git push && git push --tags"
   },
   "dependencies": {
-    "@inquirer/prompts": "^8.7.2",
-    "i18next": "^26.4.2",
-    "i18next-fs-backend": "^2.6.8",
+    "@inquirer/prompts": "^8.7.5",
+    "i18next": "^26.7.0",
+    "i18next-fs-backend": "^2.6.9",
     "semver": "^7.8.5",
-    "simple-git": "^3.36.0"
+    "simple-git": "^4.0.2"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@types/node": "^20.19.43",
+    "@types/node": "^22.13.0",
     "@types/semver": "^7.8.0",
-    "@typescript-eslint/eslint-plugin": "^8.70.0",
-    "@typescript-eslint/parser": "^8.70.0",
+    "@typescript-eslint/eslint-plugin": "^8.72.1",
+    "@typescript-eslint/parser": "^8.72.1",
     "@typescript/native": "npm:typescript@^7.0.2",
-    "@vitest/coverage-v8": "^5.0.0",
+    "@vitest/coverage-v8": "^5.0.5",
     "esbuild": "^0.28.2",
-    "eslint": "^10.10.0",
+    "eslint": "^10.14.0",
     "eslint-config-prettier": "^10.1.8",
-    "prettier": "^3.9.6",
+    "prettier": "^3.9.10",
     "typescript": "npm:@typescript/typescript6@^6.0.2",
-    "vitest": "^5.0.0"
+    "vitest": "^5.0.5"
   },
   "publishConfig": {
     "provenance": true,

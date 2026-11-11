@@ -14,7 +14,7 @@ Herramienta CLI moderna para generar tags Git siguiendo Semantic Versioning (Sem
 
 ## Requisitos
 
-- **Node.js** ≥ 20.0.0
+- **Node.js** ≥ 22.13.0
 
 ## Instalación
 
