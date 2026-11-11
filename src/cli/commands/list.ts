@@ -34,7 +34,7 @@ export async function listCommand(args: CliArgs): Promise<void> {
   }
 
   // Listar agrupados por prefijo
-  const groups = await tagService.groupByPrefix();
+  const groups = await tagService.groupByPrefix(allTags);
 
   console.log(styleText('bold', `\n${t('commands.list.tagsFound', { count: allTags.length })}\n`));
 

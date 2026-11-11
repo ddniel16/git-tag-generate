@@ -1,6 +1,6 @@
 import * as gitTags from '../git/tags.js';
 import * as gitRepo from '../git/repo.js';
-import { extractPrefixes, filterByPrefix, formatTag } from '../domain/tag.js';
+import { formatTag } from '../domain/tag.js';
 import { getNextVersion, isValidSemVer } from '../domain/semver.js';
 import { getTranslation } from '../i18n/config.js';
 import type { Tag, TagGroup, SemVerLevel, CreateTagOptions } from '../types/index.js';
@@ -9,24 +9,25 @@ import type { Tag, TagGroup, SemVerLevel, CreateTagOptions } from '../types/inde
  * Obtiene todos los tags agrupados por prefijo
  * @returns Array de grupos de tags
  */
-export async function groupByPrefix(): Promise<TagGroup[]> {
-  const allTags = await gitTags.listTags({ sortBy: '-creatordate' });
-  const prefixes = extractPrefixes(allTags);
+export async function groupByPrefix(tags?: Tag[]): Promise<TagGroup[]> {
+  const allTags = tags ?? (await gitTags.listTags({ sortBy: '-creatordate' }));
+  const groups = new Map<string | null, TagGroup>();
 
-  const groups: TagGroup[] = [];
-
-  for (const prefix of prefixes) {
-    const tagsInGroup = filterByPrefix(allTags, prefix);
-    if (tagsInGroup.length > 0) {
-      groups.push({
+  for (const tag of allTags) {
+    const prefix = tag.prefix ?? null;
+    const group = groups.get(prefix);
+    if (group) {
+      group.tags.push(tag);
+    } else {
+      groups.set(prefix, {
         prefix,
-        tags: tagsInGroup,
-        latest: tagsInGroup[0], // Ya están ordenados por fecha
+        tags: [tag],
+        latest: tag,
       });
     }
   }
 
-  return groups;
+  return Array.from(groups.values());
 }
 
 /**

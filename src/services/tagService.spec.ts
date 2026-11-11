@@ -1,23 +1,46 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { createNewTag } from './tagService.js';
+import { createNewTag, groupByPrefix } from './tagService.js';
 import * as gitTags from '../git/tags.js';
 import * as gitRepo from '../git/repo.js';
+import type { Tag } from '../types/index.js';
 
 vi.mock('../git/tags.js');
 vi.mock('../git/repo.js');
 vi.mock('../domain/semver.js', () => ({
   isValidSemVer: vi.fn((v: string) => /^\d+\.\d+\.\d+/.test(v)),
 }));
-vi.mock('../domain/tag.js', () => ({
-  formatTag: vi.fn((version: string, prefix?: string) =>
-    prefix ? `${prefix}-${version}` : version
-  ),
-}));
+vi.mock('../domain/tag.js', async () => {
+  const actual = await vi.importActual<typeof import('../domain/tag.js')>('../domain/tag.js');
+  return {
+    ...actual,
+    formatTag: vi.fn((version: string, prefix?: string) =>
+      prefix ? `${prefix}-${version}` : version
+    ),
+  };
+});
 vi.mock('../i18n/config.js', () => ({
   getTranslation: () => (key: string) => key,
 }));
 
 describe('services/tagService', () => {
+  describe('groupByPrefix', () => {
+    it('agrupa tags ya obtenidos sin volver a consultar Git', async () => {
+      const tags: Tag[] = [
+        { fullName: 'app-1.0.0', prefix: 'app', version: '1.0.0' },
+        { fullName: 'app-0.9.0', prefix: 'app', version: '0.9.0' },
+        { fullName: '1.0.0', version: '1.0.0' },
+      ];
+
+      const groups = await groupByPrefix(tags);
+
+      expect(gitTags.listTags).not.toHaveBeenCalled();
+      expect(groups).toEqual([
+        { prefix: 'app', tags: [tags[0], tags[1]], latest: tags[0] },
+        { prefix: null, tags: [tags[2]], latest: tags[2] },
+      ]);
+    });
+  });
+
   describe('createNewTag - lectura de configuración de firma', () => {
     beforeEach(() => {
       vi.clearAllMocks();
